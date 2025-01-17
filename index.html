@@ -3,135 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CS Game Night Signup</title>
+    <title>Team GOTCHA!!!!!</title>
     <style>
-        body {
-            font-family: 'Roboto', Arial, sans-serif;
+        /* Basic reset */
+        * {
             margin: 0;
             padding: 0;
-            background-color: #f1f3f4;
+            box-sizing: border-box;
+        }
+
+        /* Full screen flexbox centering */
+        body, html {
+            height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #f1f1f1;
+            overflow: hidden;
+            flex-direction: column;
         }
-        .form-container {
-            background: white;
-            padding: 20px 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 500px;
-        }
+
         h1 {
-            font-size: 24px;
-            color: #202124;
-            margin-bottom: 10px;
+            font-size: 50px;
+            color: #2c3e50;
+            margin-bottom: 20px; /* Space between title and next elements */
         }
-        p {
-            font-size: 14px;
-            color: #5f6368;
-            margin-bottom: 20px;
+
+        .message {
+            font-size: 30px;
+            color: #e74c3c;
+            margin-bottom: 20px; /* Space between text and image */
         }
-        label {
-            display: block;
-            font-size: 14px;
-            color: #202124;
-            margin-bottom: 5px;
+
+        .image {
+            width: 400px; /* Adjust the image size */
+            height: auto;
+            margin-top: 20px; /* Space above image */
         }
-        input, button, select {
+
+        /* Confetti container */
+        .confetti {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #dadce0;
-            border-radius: 4px;
-            font-size: 14px;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
         }
-        input[type="date"] {
-            cursor: pointer;
-        }
-        button {
-            background-color: #4285f4;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        button:hover {
-            background-color: #357ae8;
-        }
-        .thank-you {
-            display: none;
-            text-align: center;
-        }
-        .thank-you p {
-            color: #34a853;
-        }
-        .thank-you a {
-            color: #4285f4;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        .thank-you a:hover {
-            text-decoration: underline;
-        }
+
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <h1>CS Game Night Signup</h1>
-        <p>Join us for an exciting night of games, challenges, and fun with your fellow CS enthusiasts!</p>
-        <form id="signup-form">
-            <label for="name">Name</label>
-            <input type="text" id="name" name="name" placeholder="Your name" required>
-            
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="Your email" required>
-            
-            <label for="availability">Availability</label>
-            <input type="date" id="availability" name="availability" required>
-            
-            <button type="submit">Sign Up</button>
-        </form>
-        <div class="thank-you" id="thank-you">
-            <p>Thanks for signing up for CS Game Night! 🎮</p>
-            <p>Your download is ready:</p>
-            <a id="download-link" href="https://raw.githubusercontent.com/MatthewACraig/Gotcha/main/gotcha.txt.zip" download="game_night_info.zip">Download Confirmation</a>
-        </div>
+    <h1>Team GOTCHA!!!!!</h1>
+    
+    <!-- Confetti container -->
+    <div id="confetti" class="confetti"></div>
+
+    <div class="message">
+        There was no game night, we fooled you!
     </div>
 
+    <!-- Linking to the local drowzee.jpg image -->
+    <img src="drowzee.jpg" alt="Drowzee Meme" class="image">
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
     <script>
-        // Trigger file download on page load
-        window.onload = function () {
-            const autoDownloadLink = document.createElement('a');
-            autoDownloadLink.href = "https://raw.githubusercontent.com/MatthewACraig/Gotcha/main/gotcha.txt.zip";
-            autoDownloadLink.download = "game_night_info.zip";
-            document.body.appendChild(autoDownloadLink);
-            autoDownloadLink.click();
-            document.body.removeChild(autoDownloadLink);
-        };
-
-        const form = document.getElementById('signup-form');
-        const thankYou = document.getElementById('thank-you');
-        const downloadLink = document.getElementById('download-link');
-
-        // Handle form submission
-        form.addEventListener('submit', function (event) {
-            event.preventDefault(); // Prevent form submission
+        // Function to trigger confetti animation
+        function startConfetti() {
+            var end = Date.now() + 5 * 1000;
+            var colors = ['#ff0000', '#00ff00', '#0000ff', '#ffcc00', '#ff6600'];
             
-            // Collect form data (if needed for further use)
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
-            const availability = document.getElementById('availability').value;
-            console.log(`Name: ${name}, Email: ${email}, Availability: ${availability}`);
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: Math.random() * 360,
+                    spread: 50,
+                    origin: {
+                        x: Math.random(),
+                        y: Math.random() - 0.2
+                    },
+                    colors: colors
+                });
 
-            // Show thank-you message
-            form.style.display = 'none'; // Hide the form
-            thankYou.style.display = 'block'; // Show thank-you message
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            })();
+        }
 
-            // Trigger download on submission
-            downloadLink.click();
-        });
+        // Start confetti when the page loads
+        window.onload = function() {
+            startConfetti();
+
+            // Trigger the file download
+            const link = document.createElement('a');
+            link.href = "https://raw.githubusercontent.com/MatthewACraig/Gotcha/main/gotcha.txt.zip";
+            link.download = "gotcha.txt.zip";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
     </script>
 </body>
 </html>
