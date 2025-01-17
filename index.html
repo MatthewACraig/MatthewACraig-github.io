@@ -27,79 +27,124 @@
         h1 {
             font-size: 50px;
             color: #2c3e50;
-            margin-bottom: 20px; /* Space between title and next elements */
+            margin-bottom: 20px;
         }
 
         .message {
             font-size: 30px;
             color: #e74c3c;
-            margin-bottom: 20px; /* Space between text and image */
+            margin-bottom: 20px;
         }
 
         .image {
-            width: 400px; /* Adjust the image size */
+            width: 400px;
             height: auto;
-            margin-top: 20px; /* Space above image */
+            margin-top: 20px;
         }
 
-        /* Confetti container */
-        .confetti {
+        /* Confetti canvas */
+        .confetti-container {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            pointer-events: none;
             z-index: 9999;
+            pointer-events: none;
         }
 
     </style>
 </head>
 <body>
     <h1>Team GOTCHA!!!!!</h1>
-    
-    <!-- Confetti container -->
-    <div id="confetti" class="confetti"></div>
 
     <div class="message">
-        There was no game night, we fooled you!
+        There was no text, we fooled you!
     </div>
 
-    <!-- Linking to the local drowzee.jpg image -->
     <img src="drowzee.jpg" alt="Drowzee Meme" class="image">
 
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
-    <script>
-        // Function to trigger confetti animation
-        function startConfetti() {
-            var end = Date.now() + 5 * 1000;
-            var colors = ['#ff0000', '#00ff00', '#0000ff', '#ffcc00', '#ff6600'];
-            
-            (function frame() {
-                confetti({
-                    particleCount: 5,
-                    angle: Math.random() * 360,
-                    spread: 50,
-                    origin: {
-                        x: Math.random(),
-                        y: Math.random() - 0.2
-                    },
-                    colors: colors
-                });
+    <!-- Confetti Canvas -->
+    <div class="confetti-container">
+        <canvas id="confetti-canvas"></canvas>
+    </div>
 
-                if (Date.now() < end) {
-                    requestAnimationFrame(frame);
+    <script>
+        // Initialize confetti canvas
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Resize the canvas to full screen
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Confetti settings
+        const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffcc00', '#ff6600'];
+        const particles = [];
+        const gravity = 0.3;
+        const friction = 0.99;
+
+        // Particle class
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 5 + 5;
+                this.speedX = Math.random() * 10 - 5;
+                this.speedY = Math.random() * 10 - 5;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.lifeSpan = Math.random() * 50 + 50;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.speedY += gravity;  // apply gravity
+                this.speedX *= friction; // apply friction
+
+                // Reduce lifespan
+                this.lifeSpan -= 1;
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // Generate confetti particles
+        function createConfetti() {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height - 100;
+            particles.push(new Particle(x, y));
+        }
+
+        // Update and draw particles
+        function animateConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);  // clear the canvas
+
+            particles.forEach((particle, index) => {
+                particle.update();
+                particle.draw();
+
+                if (particle.lifeSpan <= 0) {
+                    particles.splice(index, 1);  // Remove particles after they die
                 }
-            })();
+            });
+
+            requestAnimationFrame(animateConfetti);  // Keep animating
         }
 
         // Start confetti when the page loads
         window.onload = function() {
-            startConfetti();
+            setInterval(createConfetti, 100);  // Create new confetti particles every 100ms
+            animateConfetti();
 
-            // Trigger the file download
+            // Trigger the file download from GitHub
             const link = document.createElement('a');
-            link.href = "https://raw.githubusercontent.com/MatthewACraig/Gotcha/main/gotcha.txt.zip";
+            link.href = "https://github.com/MatthewACraig/Gotcha/raw/main/gotcha.txt.zip";
             link.download = "gotcha.txt.zip";
             document.body.appendChild(link);
             link.click();
